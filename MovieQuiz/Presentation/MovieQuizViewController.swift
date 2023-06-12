@@ -8,6 +8,8 @@ final class MovieQuizViewController: UIViewController {
         let questionNumber: String
     }
     
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
+    
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
@@ -31,6 +33,12 @@ final class MovieQuizViewController: UIViewController {
         statisticService = StatisticServiceImpl()
         questionFactory?.recuestNextQuestion()
     }
+    
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
+        activityIndicator.startAnimating() // включаем анимацию
+    }
+    
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         let givenAnswer = true
@@ -124,6 +132,23 @@ final class MovieQuizViewController: UIViewController {
     }
 }
 
+private func showNetworkError(message: String) {
+    hideLoadingIndicator()
+    
+    let model = AlertModel(title: "Ошибка",
+                           message: message,
+                           buttonText: "Попробовать еще раз") { [weak self] in
+        guard let self = self else { return }
+        
+        self.currentQuestionIndex = 0
+        self.correctAnswers = 0
+        
+        self.questionFactory?.requestNextQuestion()
+    }
+    
+    alertPresenter.show(in: self, model: model)
+}
+
 extension MovieQuizViewController: QuestionFactoryDelegate {
     func didRecieveQuestion(_ question: QuizQuestion) {
         self.currentQuestion = question
@@ -131,4 +156,6 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
         self.show(quiz: viewModel)
     }
 }
+
+
 
