@@ -126,7 +126,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="activityIndicator" destination="gNv-De-a1r" id="0aH-R2-EYm"/>
+                        <outlet property="activityIndicator" destination="gNv-De-a1r" id="Pi0-Pz-C34"/>
                         <outlet property="counterLabel" destination="Y99-xc-52r" id="OOB-hR-qjF"/>
                         <outlet property="imageView" destination="dKo-xF-kTF" id="ffT-e5-r4x"/>
                         <outlet property="textLabel" destination="Lx4-kF-am4" id="r3C-WL-fqb"/>
