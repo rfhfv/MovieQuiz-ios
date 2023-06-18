@@ -2,12 +2,6 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController {
     
-    struct ViewModel {
-        let image: UIImage
-        let question: String
-        let questionNumber: String
-    }
-    
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet private var counterLabel: UILabel!
@@ -25,8 +19,6 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - Lifecycle
     
-    
-    
     override  func viewDidLoad() {
         super.viewDidLoad()
         
@@ -37,8 +29,6 @@ final class MovieQuizViewController: UIViewController {
         showLoadingIndicator()
         questionFactory?.loadData()
     }
- 
-    
     
     private func showLoadingIndicator() {
         activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
@@ -49,7 +39,6 @@ final class MovieQuizViewController: UIViewController {
         activityIndicator.stopAnimating()
         activityIndicator.isHidden = true
     }
-    
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         let givenAnswer = true
@@ -70,8 +59,6 @@ final class MovieQuizViewController: UIViewController {
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsCount)")
     }
     
-    
-    
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         textLabel.text = step.question
@@ -90,6 +77,7 @@ final class MovieQuizViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [ weak self ] in
             guard let self  = self else { return }
             self.showNextQuestionOrResults()
+            self.imageView.layer.borderColor = UIColor.clear.cgColor
         }
     }
     
@@ -104,7 +92,6 @@ final class MovieQuizViewController: UIViewController {
     
     private func showFinalResults() {
         statisticService?.store(correct: correctAnswers, total: questionsCount)
-        
         let alertModel = AlertModel(
             title: "Игра окончена!",
             message: makeResultMessage(),
@@ -115,9 +102,7 @@ final class MovieQuizViewController: UIViewController {
                 self?.questionFactory?.requestNextQuestion()
             }
         )
-        
         alertPresenter?.show(alertModel: alertModel)
-        
     }
     
     private func showNetworkError(message: String) {
@@ -127,15 +112,11 @@ final class MovieQuizViewController: UIViewController {
                                message: message,
                                buttonText: "Попробовать еще раз") { [weak self] in
             guard let self = self else { return }
-            
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
-            
             self.questionFactory?.requestNextQuestion()
         }
-        
         alertPresenter?.show(alertModel: model)
-        
     }
     
     private func makeResultMessage() -> String {
@@ -158,7 +139,6 @@ final class MovieQuizViewController: UIViewController {
         ]
         
         let resultMassege = components.joined(separator: "\n")
-
         return resultMassege
     }
 }

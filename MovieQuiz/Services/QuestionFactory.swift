@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 protocol QuestionFactoryProtocol {
     func requestNextQuestion()
 }
@@ -18,7 +17,7 @@ protocol QuestionFactoryDelegate: AnyObject {
     func didFailToLoadData(with error: Error) // сообщение об ошибке загрузки
 }
 
-class QuestionFactory: QuestionFactoryProtocol {
+final class QuestionFactory: QuestionFactoryProtocol {
     private let moviesLoader: MoviesLoading
     private weak var delegate: QuestionFactoryDelegate?
     
