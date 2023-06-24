@@ -9,29 +9,50 @@ import Foundation
 
 protocol QuestionFactoryProtocol {
     func requestNextQuestion()
+    func loadData()
 }
 
 protocol QuestionFactoryDelegate: AnyObject {
-    func didReceiveNextQuestion(_ question: QuizQuestion)
-    func didLoadDataFromServer() // сообщение об успешной загрузке
-    func didFailToLoadData(with error: Error) // сообщение об ошибке загрузки
+    func didRecieveNextQuestion(question: QuizQuestion?)
+    func didLoadDataFromServer()
+    func didFailToLoadData(with error: Error)
 }
 
 final class QuestionFactory: QuestionFactoryProtocol {
+    
     private let moviesLoader: MoviesLoading
     private weak var delegate: QuestionFactoryDelegate?
+    private var movies: [MostPopularMovie] = []
     
-    init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate?) {
+    init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate) {
         self.moviesLoader = moviesLoader
         self.delegate = delegate
     }
     
+    func loadData() {
+        moviesLoader.loadMovies { result in
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                switch result {
+                case .success(let mostPopularMovies):
+                    self.movies = mostPopularMovies.items
+                    self.delegate?.didLoadDataFromServer()
+                case .failure(let error):
+                    self.delegate?.didFailToLoadData(with: error)
+                }
+            }
+        }
+    }
+ 
     func requestNextQuestion() {
         DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            let index = (0..<self.movies.count).randomElement() ?? 0
-            
-            guard let movie = self.movies[safe: index] else { return }
+            guard
+                let self = self,
+                let index = (0..<self.movies.count).randomElement(),
+                let movie = self.movies[safe: index]
+            else {
+                return
+            }
             
             var imageData = Data()
             
@@ -52,30 +73,10 @@ final class QuestionFactory: QuestionFactoryProtocol {
             
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                self.delegate?.didReceiveNextQuestion(question)
-            }
-        }
-    }
-    
-    private var movies: [MostPopularMovie] = []
-    
-    func loadData() {
-        moviesLoader.loadMovies { [weak self] result in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                switch result {
-                case .success(let mostPopularMovies):
-                    self.movies = mostPopularMovies.items
-                    self.delegate?.didLoadDataFromServer()
-                case .failure(let error):
-                    self.delegate?.didFailToLoadData(with: error)
-                }
+                self.delegate?.didRecieveNextQuestion(question: question)
             }
         }
     }
 }
-
-
-
 
 

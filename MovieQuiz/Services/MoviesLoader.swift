@@ -7,20 +7,25 @@
 
 import Foundation
 
-// MARK: - URL
-
 protocol MoviesLoading {
-    func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void) 
-    
+    func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void)
 }
 
 struct MoviesLoader: MoviesLoading {
     
-    private let networkClient = NetworkClient()
+    //MARK: - NetworkClient
+    
+    private let networkClient: NetworkRouting
+    
+    init(networkClient: NetworkRouting = NetworkClient()) {
+        self.networkClient = networkClient
+    }
+    
+    //MARK: - URL
     
     private var mostPopularMoviesUrl: URL {
-        
-        guard let url = URL(string: "https://imdb-api.com/en/API/Top250Movies/k_zq55fa2i") else {
+        // Если мы не смогли преобразовать URL в строку, то приложение упадет с ошибкой
+        guard let url = URL(string: "https://imdb-api.com/en/API/Top250Movies/k_6r5vvzy5") else {
             preconditionFailure("Unable to construct mostPopularMoviesUrl")
         }
         return url
