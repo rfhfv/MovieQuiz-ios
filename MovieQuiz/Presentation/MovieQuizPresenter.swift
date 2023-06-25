@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 final class MovieQuizPresenter: QuestionFactoryDelegate {
-    private let statisticService: StatisticService!
-    private var questionFactory: QuestionFactoryProtocol?
+    private let statisticService: StatisticService
+private var questionFactory: QuestionFactoryProtocol?
     private weak var viewController: MovieQuizViewControllerProtocol?
     
     private let questionsCount: Int = 10

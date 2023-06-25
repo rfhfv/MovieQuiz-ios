@@ -21,6 +21,7 @@ final class AlertPresenterImpl {
 }
 
 extension AlertPresenterImpl: AlertPresenter {
+    
     func show(alertModel: AlertModel) {
         let alert = UIAlertController(
             title: alertModel.title,
@@ -34,7 +35,6 @@ extension AlertPresenterImpl: AlertPresenter {
         
         alert.addAction(action)
         viewController?.present(alert, animated: true)
-        
     }
 }
 
